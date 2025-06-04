@@ -4,8 +4,11 @@ import { fileURLToPath } from 'url';
 import { config } from 'dotenv';
 import fs from 'fs';
 
-// Load environment variables
-config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from the correct path
+config({ path: path.join(__dirname, '.env') });
 
 console.log('Starting server...');
 console.log('API Key loaded:', process.env.OPENAI_API_KEY ? 'Yes' : 'No');
@@ -21,8 +24,7 @@ try {
   process.exit(1);
 }
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,8 +42,8 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Geçerli bir mesaj gönderilmedi' });
     }
 
-    // Get the assistant agent
-    const agent = mastra.getAgent('assistant');
+    // Get the project manager agent
+    const agent = mastra.getAgent('projectManager');
 
     if (!agent) {
       return res.status(500).json({ error: 'Agent bulunamadı' });
@@ -74,8 +76,8 @@ app.get('/api/agents', (req, res) => {
   try {
     const agents = [
       {
-        name: 'assistant',
-        description: 'Türkçe konuşan yardımcı AI asistanı'
+        name: 'projectManager',
+        description: 'Proje yönetimi ve zaman çizelgesi oluşturan AI asistanı'
       }
     ];
     res.json({ agents });
